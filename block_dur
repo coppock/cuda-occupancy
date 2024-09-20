@@ -1,0 +1,19 @@
+name=`basename $0`.$$
+nmps=`./nmps`
+nsys profile --trace=cuda --sample=none --cpuctxsw=none --output=$name $*
+nsys stats --report=gputrace --format=tsv --output=. $name
+mkfifo $name.trace $name.occ
+cut -f7-12 $name.trace | ./nblocks >$name.occ &
+tail +2 ${name}_gputrace.tsv |
+        tee $name.trace |
+        cut -f2,4-6 |
+        paste - $name.occ |
+        awk '{
+                dur = $1
+                nblocks = $2 * $3 * $4
+                occ = $5 # Number of blocks per MP wave
+                nblocks_per_mp = int((nblocks - 1) / '$nmps') + 1
+                block_dur = dur * occ / nblocks_per_mp
+                print block_dur
+        }'
+rm $name.trace $name.occ
