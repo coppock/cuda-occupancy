@@ -8,16 +8,15 @@ cut -f7-12 $name.trace | occ >$name.occ &
 tail +2 ${name}_cuda_gpu_trace.tsv |
 	grep -v '\[CUDA mem[^	]*]$' |
 	tee $name.trace |
-	cut -f2,4-6,21 |
+	cut -f2,4-6 |
 	paste - $name.occ |
 	awk -F'	' '{
 		dur = $1
 		nblocks = $2 * $3 * $4
-		name = $5
-		occ = $6 # Number of blocks per MP wave
+		occ = $5 # Number of blocks per MP wave
 		nmp_waves = int((nblocks - 1) / occ + 1)
 		nwaves = int((nmp_waves - 1) / '$nmps') + 1
-		print dur / nwaves, dur, name
+		print dur / nwaves, dur
 	}'
 wait
 rm $name.* ${name}_cuda_gpu_trace.tsv
