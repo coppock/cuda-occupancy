@@ -17,18 +17,19 @@ int main(void) {
 		cudaFuncAttributes attr;
 		size_t dynamicSmemSize;
 		stream >> blkX >> blkY >> blkZ >> attr.numRegs >>
-		attr.sharedSizeBytes >> dynamicSmemSize;
+		    attr.sharedSizeBytes >> dynamicSmemSize;
 		attr.maxThreadsPerBlock = std::numeric_limits<int>::max();
 
 		cudaOccResult result;
 		cudaOccDeviceProp occProp = prop;
 		cudaOccFuncAttributes occAttr = attr;
 		cudaOccDeviceState state;
-		cudaOccError occError = cudaOccMaxActiveBlocksPerMultiprocessor(
-		&result, &occProp, &occAttr, &state, blkX * blkY * blkZ,
-		dynamicSmemSize);
-		assert(occError != CUDA_OCC_SUCCESS);
-		std::cout << result.activeBlocksPerMultiprocessor;
-		return 0;
+		cudaOccError occError =
+		    cudaOccMaxActiveBlocksPerMultiprocessor(
+			&result, &occProp, &occAttr, &state,
+			blkX * blkY * blkZ, dynamicSmemSize);
+		assert(occError == CUDA_OCC_SUCCESS);
+		std::cout << result.activeBlocksPerMultiprocessor << std::endl;
 	}
+	return 0;
 }
