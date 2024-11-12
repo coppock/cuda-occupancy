@@ -1,18 +1,15 @@
-PATH=`dirname $0`:`dirname $0`/../../apps/cudart:$PATH
-nmps=`nmps`
-mkfifo $1.trace $1.occ
-cut -f7-12 $1.trace | occ >$1.occ &
+PATH=`dirname $0`:$PATH
+mkfifo $$.trace $$.occ
+cut -f7-12 $$.trace | occ >$$.occ &
 tail +2 $1 |
 	grep -v '\[CUDA mem[^	]*]$' |
-	tee $1.trace |
+	tee $$.trace |
 	cut -f2,4-6 |
-	paste - $1.occ |
-	awk -F'	' '{
+	paste - $$.occ |
+	awk '{
 		dur = $1
 		nblocks = $2 * $3 * $4
 		occ = $5 # Number of blocks per MP wave
-		nmp_waves = int((nblocks - 1) / occ + 1)
-		nwaves = int((nmp_waves - 1) / '$nmps') + 1
-		print dur / nwaves, dur
+		print dur, nblocks, occ
 	}'
-rm $1.trace $1.occ
+rm $$.trace $$.occ

@@ -13,7 +13,7 @@ int main(void) {
 
 	for (std::string line; std::getline(std::cin, line);) {
 		std::istringstream stream(line);
-		long grdX, grdY, grdZ, blkX, blkY, blkZ;
+		int blkX, blkY, blkZ;
 		cudaFuncAttributes attr;
 		size_t dynamicSmemSize;
 		stream >> blkX >> blkY >> blkZ >> attr.numRegs >>
