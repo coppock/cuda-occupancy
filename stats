@@ -1,0 +1,1 @@
+nsys stats --report=cuda_gpu_trace --format=tsv --output=. "$@" >&2
